@@ -9,6 +9,13 @@ Full-stack demo: a Spring Boot e-commerce API with **Spring AI**, **OpenAI** (ch
 - **Orders** — Place orders and list orders; stock updates sync back into the vector index for accurate RAG context.
 - **RAG chat** — `GET /api/chat/ask` uses pgvector similarity search over embedded product and order text, then answers with the configured chat model (`ChatBotService`).
 
+## Screenshots
+
+![Product catalog](screenshots/01_product_catalog.png)
+![Add product](screenshots/02_add_product.png)
+![ShopBot chat](screenshots/03_shopbot.png)
+![Orders](screenshots/04_orders.png)
+
 ## Tech stack
 
 | Layer | Technology |
