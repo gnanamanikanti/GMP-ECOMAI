@@ -1,6 +1,5 @@
-# Spring E-Commerce AI (Vector Store & RAG)
-
-Full-stack demo: a Spring Boot e-commerce API with **Spring AI**, **OpenAI** (chat + embeddings), and **PostgreSQL + pgvector** for retrieval-augmented generation (RAG). A **React (Vite)** storefront talks to the backend for products, orders, and an AI shopping assistant.
+# E-Commerce AI (Vector Store & RAG)
+  E-commerce API with **Spring AI**, **OpenAI** (chat + embeddings), and **PostgreSQL + pgvector** for retrieval-augmented generation (RAG). A **React (Vite)** storefront talks to the backend for products, orders, and an AI shopping assistant.
 
 ## Features
 
