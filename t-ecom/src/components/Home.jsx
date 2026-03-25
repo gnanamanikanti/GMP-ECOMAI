@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import AppContext from "../Context/Context";
 import unplugged from "../assets/unplugged.png";
 import { formatUsd } from "../utils/currency";
+import { getCategoryIconClass } from "../utils/categoryIcons";
 
 const Home = ({ selectedCategory }) => {
   const { data, isError, addToCart, refreshData } = useContext(AppContext);
@@ -10,6 +11,8 @@ const Home = ({ selectedCategory }) => {
   const [showToast, setShowToast] = useState(false);
   const [toastProduct, setToastProduct] = useState(null);
   const [catalogCategory, setCatalogCategory] = useState("All");
+  /** "grid" = card layout; "icons" = compact circular / icon-forward tiles */
+  const [productView, setProductView] = useState("grid");
 
   useEffect(() => {
     if (!isDataFetched) {
@@ -135,6 +138,28 @@ const Home = ({ selectedCategory }) => {
               <strong style={{ color: "var(--text)" }}>{filteredProducts?.length ?? 0}</strong> products
             </p>
           </div>
+          <div className="catalog-view-toggle btn-group" role="group" aria-label="Product layout">
+            <button
+              type="button"
+              className={`btn btn-sm ${productView === "grid" ? "btn-app-primary" : "btn-app-ghost"}`}
+              onClick={() => setProductView("grid")}
+              title="Grid view"
+              aria-pressed={productView === "grid"}
+            >
+              <i className="bi bi-grid-3x3-gap-fill me-1" aria-hidden />
+              Grid
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${productView === "icons" ? "btn-app-primary" : "btn-app-ghost"}`}
+              onClick={() => setProductView("icons")}
+              title="Icon view"
+              aria-pressed={productView === "icons"}
+            >
+              <i className="bi bi-circle-square me-1" aria-hidden />
+              Icons
+            </button>
+          </div>
         </div>
         <div className="catalog-chips mb-4">
           {availableCategories.map((category) => (
@@ -148,7 +173,13 @@ const Home = ({ selectedCategory }) => {
             </button>
           ))}
         </div>
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div
+          className={
+            productView === "icons"
+              ? "row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3"
+              : "row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"
+          }
+        >
           {!filteredProducts || filteredProducts.length === 0 ? (
             <div className="col-12 text-center my-5">
               <h4 className="mt-2">No products available</h4>
@@ -156,34 +187,78 @@ const Home = ({ selectedCategory }) => {
             </div>
           ) : (
             filteredProducts.map((product) => {
-              const { id, brand, name, price, productAvailable, imageData, stockQuantity } = product;
-              
+              const { id, brand, name, price, productAvailable, imageData, stockQuantity, category } = product;
+              const catIcon = getCategoryIconClass(category);
+
+              if (productView === "icons") {
+                return (
+                  <div className="col" key={id}>
+                    <div
+                      className={`product-icon-tile h-100 ${!productAvailable ? "unavailable" : ""}`}
+                    >
+                      <Link to={`/product/${id}`} className="text-decoration-none product-card-link d-flex flex-column align-items-center text-center h-100">
+                        <div className="product-icon-tile-visual">
+                          <img
+                            src={convertBase64ToDataURL(imageData)}
+                            alt=""
+                            className="product-icon-tile-img"
+                            onError={(e) => {
+                              e.target.src = unplugged;
+                            }}
+                          />
+                          <span className="product-icon-tile-badge" aria-hidden>
+                            <i className={`bi ${catIcon}`} />
+                          </span>
+                        </div>
+                        <h6 className="product-icon-tile-title mt-2 mb-1 px-1">{name}</h6>
+                        <p className="product-icon-tile-brand small fst-italic mb-2">~ {brand}</p>
+                        <div className="price-tag product-icon-tile-price mb-2">{formatUsd(price)}</div>
+                        <button
+                          type="button"
+                          className="btn btn-app-primary btn-sm product-icon-tile-cart"
+                          onClick={(e) => handleAddToCart(e, product)}
+                          disabled={!productAvailable || stockQuantity === 0}
+                          title={stockQuantity !== 0 ? "Add to cart" : "Out of stock"}
+                        >
+                          <i className="bi bi-cart-plus me-1" aria-hidden />
+                          {stockQuantity !== 0 ? "Add" : "Out"}
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              }
+
               return (
                 <div className="col" key={id}>
                   <div className={`card h-100 shadow-sm ${!productAvailable ? "unavailable" : ""} product-card-surface`}>
                     <Link to={`/product/${id}`} className="text-decoration-none product-card-link">
-                      <img
-                        src={convertBase64ToDataURL(imageData)} 
-                        alt={name}
-                        className="card-img-top p-2"
-                        style={{ height: "160px", objectFit: "cover" }}
-                        onError={(e) => {
-                          e.target.src = unplugged; // Fallback image if conversion fails
-                        }}
-                      />
+                      <div className="position-relative">
+                        <img
+                          src={convertBase64ToDataURL(imageData)}
+                          alt={name}
+                          className="card-img-top p-2"
+                          style={{ height: "160px", objectFit: "cover" }}
+                          onError={(e) => {
+                            e.target.src = unplugged;
+                          }}
+                        />
+                        <span className="product-card-cat-icon" title={category || "Category"}>
+                          <i className={`bi ${catIcon}`} aria-hidden />
+                        </span>
+                      </div>
                       <div className="card-body d-flex flex-column">
                         <h5 className="card-title">{name}</h5>
                         <p className="card-text fst-italic small">~ {brand}</p>
                         <hr className="my-2 opacity-25" />
                         <div className="mt-auto">
-                          <div className="price-tag mb-3">
-                            {formatUsd(price)}
-                          </div>
+                          <div className="price-tag mb-3">{formatUsd(price)}</div>
                           <button
                             className="btn btn-app-primary w-100"
                             onClick={(e) => handleAddToCart(e, product)}
                             disabled={!productAvailable || stockQuantity === 0}
                           >
+                            <i className="bi bi-cart-plus me-2" aria-hidden />
                             {stockQuantity !== 0 ? "Add to Cart" : "Out of Stock"}
                           </button>
                         </div>

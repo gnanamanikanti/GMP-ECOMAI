@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
+import ShopBotIcon from "./ShopBotIcon";
 
 const QUICK_PROMPTS = [
-  "Suggest a laptop for office work",
-  "Show best value products",
-  "What products are in stock?",
+  { text: "Suggest a laptop for office work", icon: "bi-laptop" },
+  { text: "Show best value products", icon: "bi-tag" },
+  { text: "What products are in stock?", icon: "bi-box-seam" },
 ];
 
 function AskAIPopup() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "bot", text: "Hi! I am your GPM EcomAI assistant. How can I help today?" },
+    {
+      role: "bot",
+      text: "Hi! I am your GPM EcomAI robot assistant. How can I help today?",
+    },
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -64,11 +68,14 @@ function AskAIPopup() {
     <>
       {open && <button className="ask-popup-backdrop" onClick={() => setOpen(false)} aria-label="Close chat background" />}
 
-      <div className={`ask-popup-panel ${open ? "show" : ""}`} role="dialog" aria-label="Ask AI popup">
+      <div className={`ask-popup-panel ${open ? "show" : ""}`} role="dialog" aria-label="Ask AI robot assistant">
         <div className="ask-popup-header">
-          <div>
-            <h6 className="mb-0">Ask AI</h6>
-            <small>Instant shopping help</small>
+          <div className="d-flex align-items-center gap-3">
+            <ShopBotIcon variant="panel" />
+            <div>
+              <h6 className="mb-0">ShopBot</h6>
+              <small>Robotic shopping assistant</small>
+            </div>
           </div>
           <button className="btn btn-sm btn-light" onClick={() => setOpen(false)} aria-label="Close chat">
             <i className="bi bi-x-lg" />
@@ -77,19 +84,42 @@ function AskAIPopup() {
 
         <div className="ask-popup-quick">
           {QUICK_PROMPTS.map((prompt) => (
-            <button key={prompt} type="button" className="quick-chip border-0" onClick={() => sendMessage(prompt)} disabled={isTyping}>
-              {prompt}
+            <button
+              key={prompt.text}
+              type="button"
+              className="quick-chip quick-chip-with-icon border-0"
+              onClick={() => sendMessage(prompt.text)}
+              disabled={isTyping}
+            >
+              <i className={`bi ${prompt.icon} quick-chip-icon`} aria-hidden />
+              <span>{prompt.text}</span>
             </button>
           ))}
         </div>
 
         <div className="ask-popup-body">
           {messages.map((msg, idx) => (
-            <div key={`${msg.role}-${idx}`} className={`ask-bubble ${msg.role === "user" ? "user" : "bot"}`}>
-              {msg.text}
+            <div
+              key={`${msg.role}-${idx}`}
+              className={`ask-msg-row ${msg.role === "user" ? "is-user" : "is-bot"}`}
+            >
+              {msg.role === "bot" && <ShopBotIcon variant="avatar" />}
+              <div className={`ask-bubble ${msg.role === "user" ? "user" : "bot"}`}>{msg.text}</div>
             </div>
           ))}
-          {isTyping && <div className="ask-bubble bot">Assistant is typing...</div>}
+          {isTyping && (
+            <div className="ask-msg-row is-bot">
+              <ShopBotIcon variant="avatar" />
+              <div className="ask-bubble bot ask-bot-typing">
+                <span className="ask-typing-dots" aria-hidden>
+                  <span />
+                  <span />
+                  <span />
+                </span>
+                Processing…
+              </div>
+            </div>
+          )}
           {error && <div className="alert alert-app-error p-2 m-0 mt-2">{error}</div>}
         </div>
 
@@ -111,9 +141,14 @@ function AskAIPopup() {
         </div>
       </div>
 
-      <button type="button" className="ask-popup-fab" onClick={() => setOpen((v) => !v)} aria-label="Open Ask AI chatbot">
-        <i className="bi bi-chat-dots-fill me-2" />
-        Ask AI
+      <button
+        type="button"
+        className="ask-popup-fab d-inline-flex align-items-center gap-2"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Open ShopBot assistant"
+      >
+        <ShopBotIcon variant="fab" />
+        <span>ShopBot</span>
       </button>
     </>
   );

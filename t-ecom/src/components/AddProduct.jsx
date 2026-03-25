@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import ShopBotIcon from "./ShopBotIcon";
 
 const AddProduct = () => {
   const [product, setProduct] = useState({
@@ -428,7 +429,7 @@ const AddProduct = () => {
                         </>
                       ) : (
                         <>
-                          <i className="bi bi-robot me-1"></i>
+                          <ShopBotIcon size={17} className="me-1" />
                           Generate with AI
                         </>
                       )}
@@ -633,8 +634,8 @@ const AddProduct = () => {
           <div className="modal-dialog modal-dialog-centered modal-app">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className="bi bi-robot me-2" aria-hidden />
+                <h5 className="modal-title d-flex align-items-center">
+                  <ShopBotIcon size={22} className="me-2" />
                   Generate product with AI
                 </h5>
                 <button 

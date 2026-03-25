@@ -6,14 +6,16 @@ import {
   MessageList,
   Message,
   MessageInput,
-  TypingIndicator
+  TypingIndicator,
+  Avatar,
 } from '@chatscope/chat-ui-kit-react';
+import ShopBotIcon from './ShopBotIcon';
 
 const QUICK_PROMPTS = [
-  'Summarize laptops in the catalog',
-  'What categories do you have?',
-  'Suggest a gift under $100',
-  'How do I add a new product?',
+  { label: 'Summarize laptops in the catalog', icon: 'bi-laptop' },
+  { label: 'What categories do you have?', icon: 'bi-grid-3x3' },
+  { label: 'Suggest a gift under $100', icon: 'bi-gift' },
+  { label: 'How do I add a new product?', icon: 'bi-plus-square' },
 ];
 
 function AskAi() {
@@ -26,10 +28,11 @@ function AskAi() {
   useEffect(() => {
     setMessages([
       {
-        message: "Hi — I'm GPM EcomAI Bot. Ask about products, orders, or anything in the store.",
-        sender: 'AI',
-        direction: 'incoming'
-      }
+        message:
+          "Hi — I'm your GPM EcomAI ShopBot. Ask about products, orders, or anything in the store.",
+        sender: 'ShopBot',
+        direction: 'incoming',
+      },
     ]);
   }, []);
 
@@ -68,9 +71,9 @@ function AskAi() {
       ...prev,
       {
         message: botMessageText,
-        sender: 'ChatGPT',
-        direction: 'incoming'
-      }
+        sender: 'ShopBot',
+        direction: 'incoming',
+      },
     ]);
   };
 
@@ -103,24 +106,29 @@ function AskAi() {
         className="ask-ai-host surface-card d-flex flex-column"
         style={{ height: 'min(82vh, 720px)' }}
       >
-        <div className="ask-ai-hero flex-shrink-0">
-          <h1>
-            <i className="bi bi-stars me-2" aria-hidden />
-            Ask AI
-          </h1>
-          <p>Quick answers about your shop — try a suggestion or type your own question.</p>
+        <div className="ask-ai-hero ask-ai-hero-robot flex-shrink-0">
+          <div className="d-flex align-items-center gap-3 flex-wrap">
+            <ShopBotIcon variant="hero" />
+            <div>
+              <h1>
+                ShopBot
+              </h1>
+              <p>Robotic assistant for your store — try a suggestion or type your own question.</p>
+            </div>
+          </div>
         </div>
 
-        <div className="ask-ai-quick flex-shrink-0">
-          {QUICK_PROMPTS.map((label) => (
+        <div className="ask-ai-quick ask-ai-quick-icons flex-shrink-0">
+          {QUICK_PROMPTS.map((item) => (
             <button
-              key={label}
+              key={item.label}
               type="button"
-              className="quick-chip border-0"
+              className="quick-chip quick-chip-with-icon border-0"
               disabled={isTyping}
-              onClick={() => handleSend(label)}
+              onClick={() => handleSend(item.label)}
             >
-              {label}
+              <i className={`bi ${item.icon} quick-chip-icon`} aria-hidden />
+              <span>{item.label}</span>
             </button>
           ))}
         </div>
@@ -142,10 +150,22 @@ function AskAi() {
             <ChatContainer style={{ height: '100%' }}>
               <MessageList
                 scrollBehavior="smooth"
-                typingIndicator={isTyping ? <TypingIndicator content="Assistant is thinking…" /> : null}
+                typingIndicator={
+                  isTyping ? (
+                    <TypingIndicator content="ShopBot is processing…" />
+                  ) : null
+                }
               >
                 {messages.map((m, i) => (
-                  <Message key={i} model={m} />
+                  <Message key={i} model={m}>
+                    {m.direction === 'incoming' ? (
+                      <Avatar name="ShopBot">
+                        <span className="cs-robot-avatar">
+                          <ShopBotIcon variant="avatar" />
+                        </span>
+                      </Avatar>
+                    ) : null}
+                  </Message>
                 ))}
               </MessageList>
 

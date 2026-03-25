@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ShopBotIcon from "./ShopBotIcon";
 
 const Navbar = ({ onSelectCategory }) => {
   const getInitialTheme = () => {
@@ -192,7 +193,8 @@ const handleLinkClick = () => {
 
             <li className="nav-item">
               <a className="nav-link" href="/askai" onClick={handleLinkClick}>
-                Ask AI
+                <ShopBotIcon size={18} className="me-1 nav-shopbot-icon" />
+                ShopBot
               </a>
             </li>
             <li className="nav-item">
